@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Demonstration for project-1">
+
+  <style>
+    :root, html, body {
+      margin: 0;
+      padding: 0;
+    }
+    #demo {
+      margin: var(--ddd-spacing-2);
+    }
+    project-1 {
+      margin: var(--ddd-spacing-2);
+      border: var(--ddd-border-md);
+      border-radius: var(--ddd-radius-lg);
+    }
+    project-1:hover {
+      box-shadow: var(--ddd-boxShadow-sm);
+    }
+    #example {
+      --project-1-font-size: var(--ddd-font-size-l);
+      background-color: var(--ddd-accent-2);
+      color: var(--ddd-primary-17);
+    }
+  </style>
+  <title>project-1</title>
+</head>
+
+<body>
+  <div id="demo">
+    <h1>project-1</h1>
+    <!-- this is going to do whatever the tag's defaults are -->
+    
+    <project-1 header="Hax URL: " buttonLabel="Analyze"></project-1>
+    
+  </div>
+  <script type="module" src="./project-1.js"></script>
+
+  <!-- Take HAX, the Web and you further down the rabbit hole -->
+  <style>
+    #follow-the-white-rabbit {
+      margin: var(--ddd-spacing-4) auto 64px  16px;
+      background-color: var(--ddd-accent-4);
+      color: black;
+    }
+    #follow-the-white-rabbit[open] summary {
+      background-color: var(--ddd-accent-4) !important;
+      color: black;
+    }
+    #follow-the-white-rabbit[open] .content {
+      padding: 0 var(--ddd-spacing-4);
+    }
+    #follow-the-white-rabbit ul,
+    #follow-the-white-rabbit li {
+      padding: 0;
+      margin: 0;
+    }
+    #follow-the-white-rabbit li {
+      font-size: var(--ddd-font-size-xs);
+      list-style: none;
+    }
+    #follow-the-white-rabbit li strong,
+    #follow-the-white-rabbit li a {
+      padding: var(--ddd-spacing-2) var(--ddd-spacing-4);
+      color: black;
+      display: block;
+      font-weight: bold;
+    }
+    #follow-the-white-rabbit li:focus-within a,
+    #follow-the-white-rabbit li:hover a {
+      background-color: black;
+      color: yellow;
+    }
+  </style>
+  <script type="module" src="./project-1.js"></script>
+</body>
+</html>
