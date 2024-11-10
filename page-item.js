@@ -11,6 +11,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
   constructor() {
     super();
     this.source = '';
+    this.heading = '';
     this.lastUpdated = '';
     this.description = '';
     this.contentLink = '';
@@ -20,6 +21,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
 
   static get properties() {
     return {
+        heading: {type: String},
         source: { type: String },
         lastUpdated: { type: String},
         description: { type: String },
@@ -34,13 +36,16 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     return [css`
     :host {
         display: inline-flex;
-        height: 270px;
+        height: auto;
         max-width: 240px;
         width: 240px;
-        margin: 8px;
+        margin: 21px;
         font-family: var(--ddd-font-primary);
         background-color: var(--ddd-theme-default-nittanyNavy);
         font-weight: bold;
+        text-align: left;
+        padding: 8px;
+        min-height: 270px;
     }
   
 
@@ -62,18 +67,28 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     }
     `];
   }
-
+  
   // Lit render the HTML
   render() {
     return html`
     <div class="image">
-        <img src="${this.source}"/>
+        ${this.source ? html`
+          <img 
+            src="${this.source}" 
+            alt="${this.heading}" 
+            />
+            ` : ''}
         <div>
-          ${this.lastUpdated}
+          <h2>${this.heading}</h2>
+          <p>Last Updated: ${this.lastUpdated}</p>
           ${this.description}
-          ${this.contentLink}
-          ${this.indexLink}
-          ${this.additionalInfo}
+          <p>Content Link: ${this.contentLink}</p>
+          <p>Index Link: ${this.indexLink}</p>
+          ${this.additionalInfo ? html `
+            <video 
+              href="${this.additionalInfo}">
+            </video>
+          ` : ''}
         </div>
     </div>
     `;

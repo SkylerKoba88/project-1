@@ -22,7 +22,8 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
 
   constructor() {
     super();
-    this.value = null;
+    this.showResults = false;
+    this.value = '';
     this.title = '';
     this.description = '';
     this.logo = '';
@@ -33,6 +34,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.loading = false;
     this.items = [];
     this.buttonLabel = '';
+    this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
+    this.renderItems = [];
+    
   }
 
   // Lit reactive properties
@@ -42,7 +46,8 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       loading: { type: Boolean, reflect: true },
       items: { type: Array, },
       value: { type: String },
-      buttonLabel: { type: String}
+      buttonLabel: { type: String},
+      showResults: { type: Boolean}
     };
   }
 
@@ -79,6 +84,12 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         margin: auto;
         display: none;
       }
+      .results {
+        text-align: center;
+      }
+      page-item {
+        margin: 20px;
+      }
     `];
   }
 
@@ -88,36 +99,36 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       <div class="wrapper">
         <h5>${this.header}</h5>
         <input type='text' id="input" placeholder="Enter URL here" @input='${this.inputChanged}'/>
-        <button class="submit" @click = ${this.checkForURL}>${this.buttonLabel}</button>
+        <button class="submit" @click = ${this.toggleResultsDisplay}>${this.buttonLabel}</button>
       </div>
 
-      <div class="results"> 
+      ${this.showResults ? html `
+      <div> 
         <site-info
-          name="${this.title}"
-          description="${this.description}"
-          logo="${this.logo.href}"
-          theme="${this.theme}"
-          creationDate="${this.creationDate.created}"
-          lastUpdated="${this.lastUpdated.updated}">
+          name=${this.title}
+          description=${this.description}
+          logo=${this.logoImage}
+          theme=${this.theme}
+          creationDate=${this.formattedCreationDate}
+          lastUpdated=${this.formattedLastUpdated}
+        >
         </site-info>
 
-        ${this.items.map((item, index) => html`
-          <a href="${item.links[0].href}" target="_blank">
-          <page-item
-            source="${item.links[0].images.href}"
-            lastUpdated="${item.data[0].updated}"
-            description="${item.data[0].description}"
-            contentLink="${item.links[0].href}"
-            indexLink="${item.links[0].location.href}"
-            additionalinfo="${item.links[0].videos.href}"
-          ></page-item>
-          </a>
-        `)}
+        <div class="results">
+          ${this.renderItems || []}
+        </div>
       </div>
+      ` : ''}
+      
     `;
   }
 
-  checkForURL(e) {
+  toggleResultsDisplay() {
+    this.showResults = true;
+    this.requestUpdate(); 
+    this.updateResults(this.value);
+  }
+  /*checkForURL(e) {
     const urlInput = document.getElementById("input").value;
     const urlPattern = /^https?:\/\//;
     if (urlPattern.test(urlInput)) {
@@ -126,7 +137,14 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       console.error("Invalid URL");
       e.preventDefault();
     }
-  }
+  }*/
+    get formattedCreationDate() {
+      return this.creationDate ? new Date(this.creationDate).toLocaleDateString() : '';
+    }
+  
+    get formattedLastUpdated() {
+      return this.lastUpdated ? new Date(this.lastUpdated).toLocaleDateString() : '';
+    }
   
   inputChanged(e) {
     this.value = this.shadowRoot.querySelector('#input').value;
@@ -134,10 +152,18 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
 
   updated(changedProperties) {
     if (changedProperties.has('value') && this.value) {
+      if (!this.value.indexOf('site.json' > -1)) {
+        this.value += 'site.json';
+      }
       this.updateResults(this.value);
     }
     else if (changedProperties.has('value') && !this.value) {
       this.items = [];
+      console.error("No items found.");
+    }
+    //debugging:
+    if (changedProperties.has('items') && this.items.length > 0) {
+      console.log(this.items);
     }
   }
 
@@ -146,23 +172,44 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     if (siteInfo) siteInfo.style.display = 'block';
 
     this.loading = true;
-    const fetchUrl = value.includes('site.json') ? value : `${value}/site.json`;
-    fetch(fetchUrl).then(d => d.ok ? d.json(): {}).then(data => {
-      if (data && data.collection) {
+
+    fetch(`${this.value}`).then(d => d.ok ? d.json(): {}).then(data => {
+      console.log(data);
+      if (data) {
         this.items = [];
-        this.items = data.collection.items;
-        this.description = data.description || '';
-        this.logo = data.links ? data.links.href : '';
-        this.theme = data.metadata ? data.metadata.data.theme : '';
-        this.creationDate = data.created || '';
-        this.lastUpdated = data.updated || '';
+        this.items = data.items;
+        console.log("hax: ", this.items)
+        this.title = data.title;
+        this.description = data.description;
+        this.logo = data.metadata.site.logoImage;
+        this.theme = data.metadata.theme.variables.hexCode || '';
+        this.creationDate = data.metadata.site.created || '';
+        this.lastUpdated = data.metadata.site.updated || '';
+
+        this.renderItems = (data.items || []).map((item) => {
+          return html `
+            <a href="${this.value}" target="_blank">
+              
+            <page-item
+              source="${item.metadata.images?.[0]?.href}"
+              heading="${item.title}"
+              lastUpdated="${item.metadata.updated}"
+              description="${item.description}"
+              indexLink="${item.location.href}"
+              additionalinfo="${item.metadata.videos?.[0]?.href}"
+            ></page-item>
+            </a>
+          `
+        });
       } else {
         console.error("Data format issue");
         this.items = [];
       }
       this.loading = false;
+      this.requestUpdate(); 
     });
   }
+  //contentLink="${item.metadata.files.fullUrl}" ; not working
   /**
    * haxProperties integration via file reference
    */

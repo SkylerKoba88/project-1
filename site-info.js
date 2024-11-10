@@ -33,32 +33,33 @@ export class SiteInfo extends DDDSuper(I18NMixin(LitElement)) {
   static get styles() {
     return [css`
     :host {
-        display: inline-flex;
-        height: 270px;
-        max-width: 240px;
-        width: 240px;
+        height: 240px;
+        max-width: 1020px;
         margin: auto;
         font-family: var(--ddd-font-primary);
         background-color: var(--ddd-theme-default-nittanyNavy);
-        font-weight: bold;
     }
-  
+    div {
+      display: inline-flex;
+    }
 
     .image div {
-    max-width: 240px;
-    font-size: 12px;
-    background-color: var(--ddd-theme-default-nittanyNavy);
-    padding: 4px;
+      display: block;
+      font-size: 16px;
+      max-width: 360px;
+      background-color: var(--ddd-theme-default-nittanyNavy);
+      padding: 4px;
     }
     .image:hover {
       opacity: 50%;
     }
 
     .image img {
-    display: block;
     width: 240px;
-    height: 200px;
-    margin: auto;
+    height: 240px;
+    }
+    p {
+      padding-left: 16px;
     }
     `];
   }
@@ -69,11 +70,11 @@ export class SiteInfo extends DDDSuper(I18NMixin(LitElement)) {
     <div class="image">
         <img src="${this.logo}"/>
         <div>
-          ${this.name}
-          ${this.description}
-          ${this.theme}
-          ${this.creationDate}
-          ${this.lastUpdated}
+          <h3>${this.name}</h3>
+          <h4>${this.description}</h4>
+          <p>Theme: ${this.theme}</p>
+          <p>Creation Date: ${this.creationDate}</p>
+          <p>Last Updated: ${this.lastUpdated}</p>
         </div>
     </div>
     `;
