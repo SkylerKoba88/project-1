@@ -36,6 +36,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.buttonLabel = '';
     this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
     this.renderItems = [];
+    this.haxHandle = "https://hax.psu.edu/"
     
   }
 
@@ -97,11 +98,13 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
       <div class="wrapper">
+        <!--search bar-->
         <h5>${this.header}</h5>
         <input type='text' id="input" placeholder="Enter URL here" @input='${this.inputChanged}'/>
         <button class="submit" @click = ${this.toggleResultsDisplay}>${this.buttonLabel}</button>
       </div>
 
+  <!--displays the overview box-->
       ${this.showResults ? html `
       <div> 
         <site-info
@@ -128,16 +131,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.requestUpdate(); 
     this.updateResults(this.value);
   }
-  /*checkForURL(e) {
-    const urlInput = document.getElementById("input").value;
-    const urlPattern = /^https?:\/\//;
-    if (urlPattern.test(urlInput)) {
-      this.value = urlInput;
-    } else {
-      console.error("Invalid URL");
-      e.preventDefault();
-    }
-  }*/
+
     get formattedCreationDate() {
       return this.creationDate ? new Date(this.creationDate).toLocaleDateString() : '';
     }
@@ -150,6 +144,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.value = this.shadowRoot.querySelector('#input').value;
   }
 
+  //updating the value when typed in
   updated(changedProperties) {
     if (changedProperties.has('value') && this.value) {
       if (!this.value.indexOf('site.json' > -1)) {
@@ -167,12 +162,18 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     }
   }
 
+  //updating results based on search
   updateResults(value) {
     const siteInfo = this.shadowRoot.querySelector('site-info');
     if (siteInfo) siteInfo.style.display = 'block';
 
     this.loading = true;
 
+    //testing if site.json is in the value
+    if (!this.value.includes('site.json')) {
+      this.value += 'site.json';
+    }
+    //fetching the data
     fetch(`${this.value}`).then(d => d.ok ? d.json(): {}).then(data => {
       console.log(data);
       if (data) {
@@ -188,17 +189,15 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
 
         this.renderItems = (data.items || []).map((item) => {
           return html `
-            <a href="${this.value}" target="_blank">
-              
             <page-item
-              source="${item.metadata.images?.[0]?.href}"
+              source=${this.haxHandle}.concat(${item.metadata.files?.[0]?.fullUrl.href})
               heading="${item.title}"
               lastUpdated="${item.metadata.updated}"
               description="${item.description}"
-              indexLink="${item.location.href}"
+              contentLink= "${item.slug}"
+              indexLink=${this.haxHandle}.concat(${item.location.href})
               additionalinfo="${item.metadata.videos?.[0]?.href}"
             ></page-item>
-            </a>
           `
         });
       } else {
@@ -209,7 +208,6 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       this.requestUpdate(); 
     });
   }
-  //contentLink="${item.metadata.files.fullUrl}" ; not working
   /**
    * haxProperties integration via file reference
    */

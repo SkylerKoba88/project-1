@@ -17,6 +17,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     this.contentLink = '';
     this.indexLink = '';
     this.additionalInfo = '';
+    
   }
 
   static get properties() {
@@ -65,6 +66,13 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     height: 200px;
     margin: auto;
     }
+    a:link {
+      color: var(--ddd-theme-defaut-slateMaxLight);
+    }
+    a:visited {
+      color: var(--ddd-theme-defaut-slateMaxLight);
+      text-decoration: none;
+    }
     `];
   }
   
@@ -82,8 +90,8 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
           <h2>${this.heading}</h2>
           <p>Last Updated: ${this.lastUpdated}</p>
           ${this.description}
-          <p>Content Link: ${this.contentLink}</p>
-          <p>Index Link: ${this.indexLink}</p>
+          <a href="${this.contentLink}" target="_blank"><p>Content Link</p></a>
+          <a href="${this.indexLink}" target="_blank"><p>Index Link</p></a>
           ${this.additionalInfo ? html `
             <video 
               href="${this.additionalInfo}">
