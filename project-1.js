@@ -7,6 +7,7 @@ import "./site-info.js";
 import "./page-item.js";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
+import '@haxtheweb/simple-icon/simple-icon.js';
 
 /**
  * `project-1`
@@ -36,6 +37,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.buttonLabel = '';
     this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
     this.renderItems = [];
+    this.icon = '';
   }
 
   // Lit reactive properties
@@ -105,7 +107,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   <!--displays the overview box-->
       ${this.showResults ? html `
       <div> 
-        <site-info
+        <site-info 
           name=${this.title}
           description=${this.description}
           logo=${this.logoImage}
@@ -113,6 +115,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
           creationDate=${this.formattedCreationDate}
           lastUpdated=${this.formattedLastUpdated}
         >
+        <span> 
+          <simple-icon icon=${this.icon}></simple-icon>
+        </span>
         </site-info>
 
         <div class="results">
@@ -131,11 +136,11 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   }
 
     get formattedCreationDate() {
-      return this.creationDate ? new Date(this.creationDate).toLocaleDateString() : '';
+      return this.creationDate ? new Date(this.creationDate * 1000).toLocaleDateString() : '';
     }
   
     get formattedLastUpdated() {
-      return this.lastUpdated ? new Date(this.lastUpdated).toLocaleDateString() : '';
+      return this.lastUpdated ? new Date(this.lastUpdated * 1000).toLocaleDateString() : '';
     }
   
   inputChanged(e) {
@@ -170,12 +175,11 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     //testing if site.json is in the value
     if (!this.value.includes('site.json')) {
       fetch(`${this.value}/site.json`).then(d => d.ok ? d.json(): {}).then(data => {
-        console.log(data);
         if (data) {
           this.items = [];
           this.items = data.items;
-          console.log("hax: ", this.items)
           this.title = data.title;
+          this.icon = data.metadata.theme.variables.icon;
           this.description = data.description;
           this.logo = data.metadata.site.logoImage;
           this.theme = data.metadata.theme.variables.hexCode || '';
@@ -184,15 +188,16 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   
           this.renderItems = (data.items || []).map((item) => {
             return html `
+            <a href="${this.value}/${item.slug}" target="_blank">
               <page-item
-                source="${this.value}/${item.metadata.files?.[0]?.fullUrl}"
+                source="${this.value}/${item.metadata.files?.fullUrl}"
                 heading="${item.title}"
                 lastUpdated="${item.metadata.updated}"
                 description="${item.description}"
-                contentLink= "${this.value}/${item.slug}"
                 indexLink="${this.value}/${item.location}"
                 additionalinfo="${item.metadata.videos?.[0]}"
               ></page-item>
+            </a>
             `
           });
         } else {
@@ -211,6 +216,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
           this.items = data.items;
           console.log("hax: ", this.items)
           this.title = data.title;
+          this.icon = data.metadata.theme.variables.icon;
           this.description = data.description;
           this.logo = data.metadata.site.logoImage;
           this.theme = data.metadata.theme.variables.hexCode || '';
@@ -219,15 +225,16 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   
           this.renderItems = (data.items || []).map((item) => {
             return html `
+            <a href="${this.value}/${item.slug}" target="_blank">
               <page-item
-                source="${this.value}/${item.metadata.files?.[0]?.fullUrl}"
+                source="${this.value}/${item.metadata.files?.fullUrl}"
                 heading="${item.title}"
                 lastUpdated="${item.metadata.updated}"
                 description="${item.description}"
-                contentLink= "${this.value}/${item.slug}"
                 indexLink="${this.value}/${item.location}"
                 additionalinfo="${item.metadata.videos?.[0]?.href}"
               ></page-item>
+            </a>
             `
           });
         } else {

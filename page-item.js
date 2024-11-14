@@ -14,7 +14,6 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     this.heading = '';
     this.lastUpdated = '';
     this.description = '';
-    this.contentLink = '';
     this.indexLink = '';
     this.additionalInfo = '';
     
@@ -26,7 +25,6 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
         source: { type: String },
         lastUpdated: { type: String},
         description: { type: String },
-        contentLink: { type: String},
         indexLink: { type: String},
         additionalInfo: { type: String}
     };
@@ -75,22 +73,21 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     }
     `];
   }
-  
+  get formattedLastUpdated() {
+    return this.lastUpdated ? new Date(this.lastUpdated * 1000).toLocaleDateString() : '';
+  }
   // Lit render the HTML
   render() {
     return html`
     <div class="image">
-        ${this.source ? html`
           <img 
             src="${this.source}" 
             alt="${this.heading}" 
             />
-            ` : ''}
         <div>
           <h2>${this.heading}</h2>
-          <p>Last Updated: ${this.lastUpdated}</p>
+          <p>Last Updated: ${this.formattedLastUpdated}</p>
           ${this.description}
-          <a href="${this.contentLink}" target="_blank"><p>Content Link</p></a>
           <a href="${this.indexLink}" target="_blank"><p>Index Link</p></a>
           ${this.additionalInfo ? html `
             <a href="${this.additionalInfo}" target="_blank">Video Link</a>
