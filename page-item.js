@@ -93,9 +93,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
           <a href="${this.contentLink}" target="_blank"><p>Content Link</p></a>
           <a href="${this.indexLink}" target="_blank"><p>Index Link</p></a>
           ${this.additionalInfo ? html `
-            <video 
-              href="${this.additionalInfo}">
-            </video>
+            <a href="${this.additionalInfo}" target="_blank">Video Link</a>
           ` : ''}
         </div>
     </div>

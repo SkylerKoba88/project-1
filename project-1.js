@@ -36,8 +36,6 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.buttonLabel = '';
     this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
     this.renderItems = [];
-    this.haxHandle = "https://hax.psu.edu/"
-    
   }
 
   // Lit reactive properties
@@ -171,42 +169,77 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
 
     //testing if site.json is in the value
     if (!this.value.includes('site.json')) {
-      this.value += 'site.json';
+      fetch(`${this.value}/site.json`).then(d => d.ok ? d.json(): {}).then(data => {
+        console.log(data);
+        if (data) {
+          this.items = [];
+          this.items = data.items;
+          console.log("hax: ", this.items)
+          this.title = data.title;
+          this.description = data.description;
+          this.logo = data.metadata.site.logoImage;
+          this.theme = data.metadata.theme.variables.hexCode || '';
+          this.creationDate = data.metadata.site.created || '';
+          this.lastUpdated = data.metadata.site.updated || '';
+  
+          this.renderItems = (data.items || []).map((item) => {
+            return html `
+              <page-item
+                source="${this.value}/${item.metadata.files?.[0]?.fullUrl}"
+                heading="${item.title}"
+                lastUpdated="${item.metadata.updated}"
+                description="${item.description}"
+                contentLink= "${this.value}/${item.slug}"
+                indexLink="${this.value}/${item.location}"
+                additionalinfo="${item.metadata.videos?.[0]}"
+              ></page-item>
+            `
+          });
+        } else {
+          console.error("Data format issue");
+          this.items = [];
+        }
+        this.loading = false;
+        this.requestUpdate(); 
+      });
+    } else {
+      fetch(`${this.value}`).then(d => d.ok ? d.json(): {}).then(data => {
+        console.log(data);
+        this.value = this.value.replace(/\/site\.json$/, '');
+        if (data) {
+          this.items = [];
+          this.items = data.items;
+          console.log("hax: ", this.items)
+          this.title = data.title;
+          this.description = data.description;
+          this.logo = data.metadata.site.logoImage;
+          this.theme = data.metadata.theme.variables.hexCode || '';
+          this.creationDate = data.metadata.site.created || '';
+          this.lastUpdated = data.metadata.site.updated || '';
+  
+          this.renderItems = (data.items || []).map((item) => {
+            return html `
+              <page-item
+                source="${this.value}/${item.metadata.files?.[0]?.fullUrl}"
+                heading="${item.title}"
+                lastUpdated="${item.metadata.updated}"
+                description="${item.description}"
+                contentLink= "${this.value}/${item.slug}"
+                indexLink="${this.value}/${item.location}"
+                additionalinfo="${item.metadata.videos?.[0]?.href}"
+              ></page-item>
+            `
+          });
+        } else {
+          console.error("Data format issue");
+          this.items = [];
+        }
+        this.loading = false;
+        this.requestUpdate(); 
+      });
     }
     //fetching the data
-    fetch(`${this.value}`).then(d => d.ok ? d.json(): {}).then(data => {
-      console.log(data);
-      if (data) {
-        this.items = [];
-        this.items = data.items;
-        console.log("hax: ", this.items)
-        this.title = data.title;
-        this.description = data.description;
-        this.logo = data.metadata.site.logoImage;
-        this.theme = data.metadata.theme.variables.hexCode || '';
-        this.creationDate = data.metadata.site.created || '';
-        this.lastUpdated = data.metadata.site.updated || '';
-
-        this.renderItems = (data.items || []).map((item) => {
-          return html `
-            <page-item
-              source=${this.haxHandle}.concat(${item.metadata.files?.[0]?.fullUrl.href})
-              heading="${item.title}"
-              lastUpdated="${item.metadata.updated}"
-              description="${item.description}"
-              contentLink= "${item.slug}"
-              indexLink=${this.haxHandle}.concat(${item.location.href})
-              additionalinfo="${item.metadata.videos?.[0]?.href}"
-            ></page-item>
-          `
-        });
-      } else {
-        console.error("Data format issue");
-        this.items = [];
-      }
-      this.loading = false;
-      this.requestUpdate(); 
-    });
+    
   }
   /**
    * haxProperties integration via file reference
