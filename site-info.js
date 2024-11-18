@@ -38,7 +38,7 @@ export class SiteInfo extends DDDSuper(I18NMixin(LitElement)) {
         margin: auto;
         font-family: var(--ddd-font-primary);
         background-color: var(--ddd-theme-default-nittanyNavy);
-        radius: var(--ddd-radius-sm);
+        border-radius: var(--ddd-radius-sm);
     }
     div {
       display: inline-flex;

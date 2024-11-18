@@ -35,9 +35,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.loading = false;
     this.items = [];
     this.buttonLabel = '';
-    //this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
     this.renderItems = [];
     this.icon = '';
+    this.errorMessage = '';
   }
 
   // Lit reactive properties
@@ -72,6 +72,22 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       }
       #input {
         font-family: Verdana, Geneva, Tahoma, sans-serif();
+        height: 32px;
+        width: 300px;
+      }
+      button {
+        height: 32px;
+        font-family: var(--ddd-theme-primary);
+        background-color: var(--ddd-theme-default-slateGray);
+        font-weight: bold;
+        color: var(--ddd-theme-default-slateLight);
+        border: var(--ddd-border-md) white;
+        border-radius: var(--ddd-radius-xs);
+      }
+      button:hover {
+        background-color: var(--ddd-theme-default-slateLight);
+        color: var(--ddd-theme-default-slateGray);
+        border: var(--ddd-border-md) var(--ddd-theme-default-slateGray);
       }
       a:link {
         color: var(--ddd-theme-defaut-slateMaxLight);
@@ -87,9 +103,15 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       }
       .results {
         text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
       }
       page-item {
         margin: 20px;
+      }
+      .error {
+        text-align: center;
       }
     `];
   }
@@ -103,10 +125,12 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         <input type='text' id="input" placeholder="Enter URL" @input='${this.inputChanged}'/>
         <button class="submit" @click = ${this.toggleResultsDisplay}>${this.buttonLabel}</button>
       </div>
+      <div class="error">${this.errorMessage}</div>
 
+  <!--Can't figure out how to make both overview and results show up simultaneously-->
   <!--displays the overview box-->
-      ${this.showResults ? html `
-      <div> 
+      ${this.showResults && !this.errorMessage ? html `
+      <div class="results-container"> 
         <site-info 
           name=${this.title}
           description=${this.description}
@@ -145,6 +169,17 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   
   inputChanged(e) {
     this.value = this.shadowRoot.querySelector('#input').value;
+    const inputValue = e.target.value;
+    try {
+      new URL(inputValue);
+      this.value = inputValue;
+      this.errorMessage = '';
+      console.log("Valid URL:", inputValue);
+    } catch (error) {
+      console.error("Invalid URL:", inputValue);
+      this.value = '';
+      this.errorMessage = "Please type a valid URL.";
+    }
   }
 
   //updating the value when typed in
@@ -157,7 +192,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     }
     else if (changedProperties.has('value') && !this.value) {
       this.items = [];
-      console.error("No items found.");
+      this.title = "No items found.";
     }
     //debugging:
     if (changedProperties.has('items') && this.items.length > 0) {
@@ -203,6 +238,8 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         } else {
           console.error("Data format issue");
           this.items = [];
+          this.title = "No page found.";
+          this.logo = "http://www.rtor.org/depression/";
         }
         this.loading = false;
         this.requestUpdate(); 
@@ -214,7 +251,6 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         if (data) {
           this.items = [];
           this.items = data.items;
-          console.log("hax: ", this.items)
           this.title = data.title;
           this.icon = data.metadata.theme.variables.icon;
           this.description = data.description;
@@ -240,6 +276,8 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         } else {
           console.error("Data format issue");
           this.items = [];
+          this.title = "No page found.";
+          this.logo = "http://www.rtor.org/depression/";
         }
         this.loading = false;
         this.requestUpdate(); 

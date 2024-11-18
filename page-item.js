@@ -35,6 +35,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     return [css`
     :host {
         display: inline-flex;
+        flex-direction: column;
         height: auto;
         max-width: 240px;
         width: 240px;
@@ -45,6 +46,8 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
         text-align: left;
         padding: 8px;
         min-height: 270px;
+        border-radius: var(--ddd-radius-sm);
+        box-shadow: var(--ddd-boxShadow-md);
     }
   
 
@@ -53,6 +56,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     font-size: 12px;
     background-color: var(--ddd-theme-default-nittanyNavy);
     padding: 4px;
+    flex-grow: 1;
     }
     .image:hover {
       opacity: 50%;
@@ -63,6 +67,7 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
     width: 240px;
     height: 200px;
     margin: auto;
+    border-radius: var(--ddd-radius-sm);
     }
     a:link {
       color: var(--ddd-theme-defaut-slateMaxLight);
@@ -80,10 +85,12 @@ export class PageItem extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
     <div class="image">
+        ${this.source ? html`
           <img 
             src="${this.source}" 
             alt="${this.heading}" 
             />
+            ` : ''}
         <div>
           <h2>${this.heading}</h2>
           <p>Last Updated: ${this.formattedLastUpdated}</p>
