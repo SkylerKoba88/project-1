@@ -35,7 +35,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.loading = false;
     this.items = [];
     this.buttonLabel = '';
-    this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
+    //this.logoImage = `https://haxtheweb.org/files/hax%20(1).png`;
     this.renderItems = [];
     this.icon = '';
   }
@@ -100,7 +100,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       <div class="wrapper">
         <!--search bar-->
         <h5>${this.header}</h5>
-        <input type='text' id="input" placeholder="Enter URL here" @input='${this.inputChanged}'/>
+        <input type='text' id="input" placeholder="Enter URL" @input='${this.inputChanged}'/>
         <button class="submit" @click = ${this.toggleResultsDisplay}>${this.buttonLabel}</button>
       </div>
 
@@ -110,7 +110,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         <site-info 
           name=${this.title}
           description=${this.description}
-          logo=${this.logoImage}
+          logo=${this.logo}
           theme=${this.theme}
           creationDate=${this.formattedCreationDate}
           lastUpdated=${this.formattedLastUpdated}
@@ -181,7 +181,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
           this.title = data.title;
           this.icon = data.metadata.theme.variables.icon;
           this.description = data.description;
-          this.logo = data.metadata.site.logoImage;
+          this.logo = this.value + "/" + data.metadata.site.logo;
           this.theme = data.metadata.theme.variables.hexCode || '';
           this.creationDate = data.metadata.site.created || '';
           this.lastUpdated = data.metadata.site.updated || '';
@@ -190,7 +190,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
             return html `
             <a href="${this.value}/${item.slug}" target="_blank">
               <page-item
-                source="${this.value}/${item.metadata.files?.fullUrl}"
+                source="${this.value}/${item.metadata.images[0]}"
                 heading="${item.title}"
                 lastUpdated="${item.metadata.updated}"
                 description="${item.description}"
@@ -218,7 +218,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
           this.title = data.title;
           this.icon = data.metadata.theme.variables.icon;
           this.description = data.description;
-          this.logo = data.metadata.site.logoImage;
+          this.logo = this.value + "/" + data.metadata.site.logo;
           this.theme = data.metadata.theme.variables.hexCode || '';
           this.creationDate = data.metadata.site.created || '';
           this.lastUpdated = data.metadata.site.updated || '';
@@ -227,7 +227,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
             return html `
             <a href="${this.value}/${item.slug}" target="_blank">
               <page-item
-                source="${this.value}/${item.metadata.files?.fullUrl}"
+                source="${this.value}/${item.metadata.items[0]}"
                 heading="${item.title}"
                 lastUpdated="${item.metadata.updated}"
                 description="${item.description}"
